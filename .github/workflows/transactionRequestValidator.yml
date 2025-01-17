@@ -1,0 +1,45 @@
+
+name: CI-CD - transactionRequestValidator
+
+on:
+  repository_dispatch:
+    types: [trigger-workflow]
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout Code
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Step 3: Build Lambda Function Module
+      - name: Build transactionRequestValidator Module
+        run: mvn clean install -pl src/services/pg/transactionRequestValidator -am
+
+      # Step 4: Package Lambda Deployment
+      - name: Package Lambda
+        run: |
+          JAR_PATH="src/services/pg/transactionRequestValidator/target/transactionRequestValidator-1.0-SNAPSHOT.jar"
+          ZIP_PATH="src/services/pg/transactionRequestValidator/transactionRequestValidator.zip"
+          zip -j "$ZIP_PATH" "$JAR_PATH"
+
+      # Step 5: Upload Artifact
+      - name: Upload Lambda Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lambda-Package
+          path: src/services/pg/transactionRequestValidator/transactionRequestValidator.zip
+
+     # Step 6: Download Lambda Package Artifact
+      - name: Download Lambda Package
+        uses: actions/download-artifact@v3
+        with:
+          name: Lambda-Package

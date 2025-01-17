@@ -1,0 +1,46 @@
+name: CI-CD - ctobFailedResponseFormatter
+
+on:
+  repository_dispatch:
+    types: [trigger-workflow]
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout Code
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Step 3: Build Lambda Function Module
+      - name: Build ctobFailedResponseFormatter Module
+        run: mvn clean install -pl src/services/pg/ctobFailedResponseFormatter -am
+
+      # Step 4: Package Lambda Deployment
+      - name: Package Lambda
+        run: |
+          JAR_PATH="src/services/pg/ctobFailedResponseFormatter/target/ctobFailedResponseFormatter-1.0-SNAPSHOT.jar"
+          ZIP_PATH="src/services/pg/ctobFailedResponseFormatter/ctobFailedResponseFormatter.zip"
+          zip -j "$ZIP_PATH" "$JAR_PATH"
+
+      # Step 5: Upload Artifact
+      - name: Upload Lambda Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-package
+          path: src/services/pg/ctobFailedResponseFormatter/ctobFailedResponseFormatter.zip
+
+     # Step 6: Download Lambda Package Artifact
+      - name: Download Lambda Package
+        uses: actions/download-artifact@v3
+        with:
+          name: lambda-package
+
+

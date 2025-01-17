@@ -1,0 +1,44 @@
+name: CI-CD - ctobProcessCallback
+
+on:
+  repository_dispatch:
+    types: [trigger-workflow]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout Code
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Step 3: Build ctobProcessCallback Module
+      - name: Build ctobProcessCallback Module
+        run: mvn clean install -pl src/operator/airtelmoney/ctobProcessCallback -am
+
+      # Step 4: Package Lambda Deployment
+      - name: Package Lambda
+        run: |
+          JAR_PATH="src/operator/airtelmoney/ctobProcessCallback/target/airtelmoney-ctobProcessCallback-1.0-SNAPSHOT.jar"
+          ZIP_PATH="src/operator/airtelmoney/ctobProcessCallback/airtelmoney-ctobProcessCallback.zip"
+          zip -j "$ZIP_PATH" "$JAR_PATH"
+
+      # Step 5: Upload Artifact
+      - name: Upload Lambda Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: lambda-package
+          path: src/operator/airtelmoney/ctobProcessCallback/airtelmoney-ctobProcessCallback.zip
+
+      # Step 6: Download Lambda Package Artifact
+      - name: Download Lambda Package
+        uses: actions/download-artifact@v3
+        with:
+          name: lambda-package
