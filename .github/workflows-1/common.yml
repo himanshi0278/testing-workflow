@@ -3,9 +3,7 @@ name: Common Workflow
 on:
   push:
     paths:
-      - 'common/**'
-    branches:
-      - feature/testing-yaml--file
+      - 'src/common/**'
 
 jobs:
   dispatch_event:
