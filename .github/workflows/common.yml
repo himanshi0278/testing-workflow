@@ -3,7 +3,7 @@ name: Common Folder Change Trigger
 on:
   push:
     paths:
-      - 'common/**'  # This ensures the workflow runs when any file in the common folder is modified
+      - 'src/common/**'  # This ensures the workflow runs when any file in the common folder is modified
 
 jobs:
   trigger-lambdas:
