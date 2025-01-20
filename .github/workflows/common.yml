@@ -21,7 +21,7 @@ jobs:
           for workflow in "${workflows[@]}"; do
             curl -X POST \
               -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: token ${{ secrets.GIT_PAT }}" \
+              -H "Authorization: token ${{ secrets.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 }}" \
               https://api.github.com/repos/himanshi0278/testing-workflow/dispatches \
               -d "{\"event_type\": \"trigger-workflow\", \"client_payload\": {\"workflow\": \"$workflow\"}}"
           done
