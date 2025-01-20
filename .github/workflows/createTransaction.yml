@@ -1,11 +1,9 @@
-
 name: CI-CD - createTransaction
 
 on:
   repository_dispatch:
     types: [trigger-workflow]
-      
-      
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,9 +36,3 @@ jobs:
         with:
           name: lambda-package
           path: src/services/pg/createTransaction/createTransaction.zip
-
-     # Step 6: Download Lambda Package Artifact
-      - name: Download Lambda Package
-        uses: actions/download-artifact@v3
-        with:
-          name: lambda-package
