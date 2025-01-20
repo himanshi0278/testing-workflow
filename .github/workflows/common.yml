@@ -9,17 +9,30 @@ jobs:
   dispatch_update:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch Update Event
+      - name: Dispatch Update Event for All Workflows
         uses: actions/github-script@v6
         with:
           script: |
-            github.repos.createDispatchEvent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              event_type: 'trigger-workflow',
-              client_payload: { 
-                // Optional: You can include data here to send to other workflows 
-                //  e.g., 'branch': context.ref
-                //  e.g., 'commit_message': context.payload.head_commit.message
-              }
-            })
+            const workflows = [
+              'createTransaction',
+              'ctobFailedResponseFormatter',
+              'ctobformatRequest',
+              'ctobProcess',
+              'ctobProcessCallback',
+              'ctobRequest',
+              'ctobSuccessResponseFormatter',
+              'frontCtobRequest',
+              'getToken',
+              'getTransactionStatus',
+              'router',
+              'transactionRequestValidator',
+              'updateTransaction'
+            ];
+            for (const workflow of workflows) {
+              await github.repos.createDispatchEvent({
+                owner: 'himanshi0278',
+                repo: 'testing-workflow',
+                event_type: 'trigger-workflow',
+                client_payload: { workflow_name: workflow }
+              });
+            }
