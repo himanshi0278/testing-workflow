@@ -1,38 +1,27 @@
-name: CI-CD - Common Changes
+name: Common Folder Change Trigger
 
 on:
   push:
     paths:
-      - 'src/common/**'
+      - 'common/**'  # This ensures the workflow runs when any file in the common folder is modified
 
 jobs:
-  dispatch_update:
+  trigger-lambdas:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch Update Event for All Workflows
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const workflows = [
-              'createTransaction',
-              'ctobFailedResponseFormatter',
-              'ctobformatRequest',
-              'ctobProcess',
-              'ctobProcessCallback',
-              'ctobRequest',
-              'ctobSuccessResponseFormatter',
-              'frontCtobRequest',
-              'getToken',
-              'getTransactionStatus',
-              'router',
-              'transactionRequestValidator',
-              'updateTransaction'
-            ];
-            for (const workflow of workflows) {
-              await github.repos.createDispatchEvent({
-                owner: 'himanshi0278',
-                repo: 'testing-workflow',
-                event_type: 'trigger-workflow',
-                client_payload: { workflow_name: workflows }
-              });
-            }
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Trigger Lambda Workflows
+      - name: Dispatch Trigger for Lambda Workflows
+        run: |
+          workflows=("workflow" "workflow-1")
+          
+          for workflow in "${workflows[@]}"; do
+            curl -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: token ${{ secrets.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 }}" \
+              https://api.github.com/repos/himanshi0278/testing-workflow/dispatches \
+              -d "{\"event_type\": \"trigger-workflow\", \"client_payload\": {\"workflow\": \"$workflow\"}}"
+          done
