@@ -1,8 +1,11 @@
 name: CI-CD - createTransaction
 
-on:
-  repository_dispatch:
-    types: [trigger-workflow]
+on: 
+  repository_dispatch: 
+    types: [trigger-workflow] 
+  push: 
+    branches: 
+      - master
 
 jobs:
   build:
