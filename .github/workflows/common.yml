@@ -33,6 +33,6 @@ jobs:
                 owner: 'himanshi0278',
                 repo: 'testing-workflow',
                 event_type: 'trigger-workflow',
-                client_payload: { workflow_name: workflow }
+                client_payload: { workflow_name: workflows }
               });
             }
