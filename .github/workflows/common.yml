@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'common/**'  # Triggers the workflow when changes occur in the 'common' folder
+    branches:
+      - master
 
 jobs:
   trigger-lambdas:
