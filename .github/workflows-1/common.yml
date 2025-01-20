@@ -1,19 +1,28 @@
-name: Common Workflow
+name: Common Folder Change Trigger
 
 on:
   push:
     paths:
-      - 'src/common/**'
-    branches:
-      - master
+      - 'common/**'  # Monitor changes in the common folder
 
 jobs:
-  dispatch_event:
+  trigger-lambdas:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger another workflow via repository_dispatch
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Trigger Lambda Workflows
+      - name: Dispatch Trigger for Lambda Workflows
         run: |
-          curl -X POST -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: token ${{ secrets.GIT_PAT }}" \
-          https://api.github.com/repos/himanshi0278/testing-workflow/dispatches \
-          -d '{"event_type":"trigger-workflow"}'
+          # List of workflows to trigger
+          workflows=("Workflow" "Workflow-1")
+          
+          for workflow in "${workflows[@]}"; do
+            curl -X POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              -H "Authorization: token ${{ secrets.GIT_PAT }}" \
+               https://api.github.com/repos/himanshi0278/testing-workflow/dispatches \
+              -d "{\"event_type\": \"trigger-workflow\", \"client_payload\": {\"workflow\": \"$workflow\"}}"
+          done
